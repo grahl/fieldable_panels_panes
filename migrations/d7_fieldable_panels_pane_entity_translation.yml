@@ -1,0 +1,37 @@
+id: d7_fieldable_panels_pane_entity_translation
+label: Fieldable panels pane entity translations
+migration_tags:
+  - Drupal 7
+  - translation
+  - Content
+  - Multilingual
+  - 'Fieldable Panels Panes'
+deriver: Drupal\fieldable_panels_panes\Plugin\migrate\D7FieldablePanelsPaneDeriver
+source:
+  plugin: d7_fieldable_panels_pane_entity_translation
+process:
+  id: entity_id
+  bundle: bundle
+  langcode:
+    plugin: default_value
+    source: language
+    default_value: "und"
+  info: title
+  uid: uid
+  status: status
+  created: created
+  changed: changed
+  revision_uid: revision_uid
+  revision_log: log
+  revision_timestamp: timestamp
+  content_translation_source: source
+  content_translation_outdated: translate
+destination:
+  plugin: entity:block_content
+  translations: true
+  destination_module: content_translation
+migration_dependencies:
+  required:
+    - language
+    - d7_entity_translation_settings
+    - d7_fieldable_panels_pane

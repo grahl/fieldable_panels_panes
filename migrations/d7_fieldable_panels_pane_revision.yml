@@ -1,0 +1,35 @@
+id: d7_fieldable_panels_pane_revision
+label: Fieldable Panels Pane revisions
+audit: true
+migration_tags:
+  - Drupal 7
+  - Content
+  - 'Fieldable Panels Panes'
+deriver: Drupal\fieldable_panels_panes\Plugin\migrate\D7FieldablePanelsPaneDeriver
+source:
+  plugin: d7_fieldable_panels_pane_revision
+process:
+  # If you are using this file to build a custom migration consider removing
+  # the fpid and vid fields to allow incremental migrations.
+  id: fpid
+  revision_id: vid
+  bundle: bundle
+  langcode:
+    plugin: default_value
+    source: language
+    default_value: "und"
+  info: title
+  uid: entity_uid
+  status:
+    plugin: default_value
+    default_value: 1
+  created: created
+  changed: changed
+  revision_uid: revision_uid
+  revision_log: log
+  revision_timestamp: timestamp
+destination:
+  plugin: entity_revision:block_content
+migration_dependencies:
+  required:
+    - d7_fieldable_panels_pane

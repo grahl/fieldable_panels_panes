@@ -1,0 +1,83 @@
+<?php
+
+/**
+ * @file
+ * Module file.
+ */
+
+use Drupal\field\Plugin\migrate\source\d7\Field;
+use Drupal\field\Plugin\migrate\source\d7\FieldInstance;
+use Drupal\field\Plugin\migrate\source\d7\ViewMode;
+use Drupal\migrate_drupal\Plugin\migrate\FieldMigration;
+
+/**
+ * Implements hook_migration_plugins_alter().
+ */
+function fieldable_panels_panes_migration_plugins_alter(array &$migrations) {
+  /** @var \Drupal\migrate\Plugin\MigrationPluginManager $migration_plugin_manager */
+  $migration_plugin_manager = \Drupal::service('plugin.manager.migration');
+  /** @var \Drupal\migrate\Plugin\MigrateSourcePluginManager $source_plugin_manager */
+  $source_plugin_manager = \Drupal::service('plugin.manager.migrate.source');
+
+  foreach ($migrations as &$migration) {
+    $migration_stub = $migration_plugin_manager
+      ->createStubMigration($migration);
+    $source = $source_plugin_manager->createInstance(
+      $migration['source']['plugin'],
+      $migration['source'],
+      $migration_stub
+    );
+    if ($source) {
+      if (is_a($migration['class'], FieldMigration::class, TRUE)) {
+        // Field storage.
+        if (is_a($source, Field::class)) {
+          _fieldable_panels_panes_entity_type_mapping($migration);
+        }
+
+        // Field instance.
+        if (is_a($source, FieldInstance::class)) {
+          _fieldable_panels_panes_entity_type_mapping($migration);
+          $migration['migration_dependencies']['optional']['d7_fieldable_panels_pane_type'] = 'd7_fieldable_panels_pane_type';
+        }
+      }
+
+      // View Modes.
+      if (is_a($source, ViewMode::class)) {
+        _fieldable_panels_panes_entity_type_mapping(
+          $migration,
+          'targetEntityType'
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Map panel pane to custom block.
+ *
+ * @param array $migration
+ *   The migration to process.
+ * @param string $destination
+ *   The process destination.
+ */
+function _fieldable_panels_panes_entity_type_mapping(
+  array &$migration,
+  $destination = 'entity_type'
+) {
+  $process = $migration['process'][$destination];
+
+  if (!is_array($process)) {
+    $process = [
+      [
+        'plugin' => 'get',
+        'source' => 'entity_type',
+      ],
+    ];
+  }
+  $process['fieldable_panels_pane'] = [
+    'plugin' => 'static_map',
+    'map' => ['fieldable_panels_pane' => 'block_content'],
+    'bypass' => TRUE,
+  ];
+  $migration['process'][$destination] = $process;
+}

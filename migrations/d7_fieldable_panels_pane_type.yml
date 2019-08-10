@@ -1,0 +1,14 @@
+id: d7_fieldable_panels_pane_type
+label: Fieldable Panel Pane type configuration
+migration_tags:
+  - Drupal 7
+  - Configuration
+  - 'Fieldable Panels Panes'
+source:
+  plugin: d7_fieldable_panels_pane_type
+process:
+  id: name
+  label: title
+  description: description
+destination:
+  plugin: entity:block_content_type

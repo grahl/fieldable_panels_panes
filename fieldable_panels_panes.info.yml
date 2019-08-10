@@ -1,0 +1,4 @@
+name: 'Fieldable Panels Panes (FPP)'
+type: module
+description: 'Migration functionality for  Fieldable Panels Panes.'
+core: 8.x
